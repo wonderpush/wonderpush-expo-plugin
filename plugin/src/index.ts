@@ -13,7 +13,7 @@ export type WonderPushPluginProps = {
   allowBackgroundStart?: boolean;
   ios?: {
     apsEnvironment?: 'development' | 'production';
-    useFrameworks?: boolean;
+    useFrameworks?: boolean | 'dynamic' | 'static';
   };
   android?: {
     defaultNotificationIconResource?: string;

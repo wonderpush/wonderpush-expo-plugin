@@ -316,7 +316,7 @@ const withNotificationServiceExtensionFiles: ConfigPlugin<
 const withNotificationServiceExtensionPodfile: ConfigPlugin<
   WonderPushPluginProps | void
 > = (config, props) => {
-  const useFrameworks = props?.ios?.useFrameworks ?? false;
+  const useFrameworks = props?.ios?.useFrameworks;
   return withPodfile(config, (config) => {
     const podfileContent = config.modResults.contents;
 
@@ -335,7 +335,12 @@ const withNotificationServiceExtensionPodfile: ConfigPlugin<
     }
 
     // Add the extension target block at the end of the file
-    const useFrameworksLine = useFrameworks ? '\n  use_frameworks!' : '';
+    let useFrameworksLine = '';
+    if (useFrameworks === true || useFrameworks === 'dynamic') {
+      useFrameworksLine = '\n  use_frameworks!';
+    } else if (useFrameworks === 'static') {
+      useFrameworksLine = "\n  use_frameworks! :linkage => :static";
+    }
     const extensionTargetBlock = `
 target '${NSE_TARGET_NAME}' do${useFrameworksLine}
   pod 'WonderPushExtension', '~> 4.0'
