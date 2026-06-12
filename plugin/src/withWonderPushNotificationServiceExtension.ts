@@ -315,7 +315,8 @@ const withNotificationServiceExtensionFiles: ConfigPlugin<
  */
 const withNotificationServiceExtensionPodfile: ConfigPlugin<
   WonderPushPluginProps | void
-> = (config) => {
+> = (config, props) => {
+  const useFrameworks = props?.ios?.useFrameworks ?? false;
   return withPodfile(config, (config) => {
     const podfileContent = config.modResults.contents;
 
@@ -334,8 +335,9 @@ const withNotificationServiceExtensionPodfile: ConfigPlugin<
     }
 
     // Add the extension target block at the end of the file
+    const useFrameworksLine = useFrameworks ? '\n  use_frameworks!' : '';
     const extensionTargetBlock = `
-target '${NSE_TARGET_NAME}' do
+target '${NSE_TARGET_NAME}' do${useFrameworksLine}
   pod 'WonderPushExtension', '~> 4.0'
 end
 `;
@@ -386,7 +388,7 @@ const withWonderPushNotificationServiceExtension: ConfigPlugin<
 > = (config, props) => {
   config = withNotificationServiceExtensionFiles(config, props);
   config = withNotificationServiceExtensionXcodeTarget(config, props);
-  config = withNotificationServiceExtensionPodfile(config);
+  config = withNotificationServiceExtensionPodfile(config, props);
   config = withNotificationServiceExtensionEASConfig(config);
   return config;
 };
